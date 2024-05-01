@@ -1,6 +1,11 @@
 -- main module file
 local module = require("img_viewer.module")
 
+local nvim_tree = require("nvim-tree")
+local tree_api  = require("nvim-tree.api")
+
+
+
 ---@class Config
 ---@field opt string Your config option
 local config = {
@@ -17,19 +22,35 @@ M.config = config
 -- you can define your setup function here. Usually configurations can be merged, accepting outside params and
 -- you can also put some validation here for those.
 M.setup = function(args)
-    M.config = vim.tbl_deep_extend("force", M.config, args or {})
+    --M.config = vim.tbl_deep_extend("force", M.config, args or {})
 
-    M.hello2 = function()
-        print('Hello2!!')
+
+    ---------- Sample api 
+    M.hello = function()
+        print("Hello at lua...")
     end
 
+    ---------- nvim-tree api 
+    M.tree_open = function()
+        tree_api.tree.toggle()
+    end
+
+    --M.tree_get = function()
+    --    file_name = tree_api.tree.get_node_under_cursor()
+    --    print( file_name )
+    --end
+
+
     --User Finction
-    vim.api.nvim_create_user_command("MyHello2", require("img_viewer").hello2, {})
+    vim.api.nvim_create_user_command("MyHello",  require("img_viewer").hello, {})
+    vim.api.nvim_create_user_command("MyToggle", require("img_viewer").tree_open, {})
+    --vim.api.nvim_create_user_command("MyGet",    require("img_viewer").tree_get, {})
 end
 
-M.hello = function()
-  return module.my_first_function(M.config.opt)
-end
-
+-- M.hello = function()
+--   return module.my_first_function(M.config.opt)
+-- end
 
 return M
+
+
