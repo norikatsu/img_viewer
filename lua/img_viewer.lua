@@ -36,8 +36,14 @@ M.setup = function(args)
     end
 
     M.tree_get = function()
-        file_name = tree_api.tree.get_node_under_cursor()
-        print( file_name )
+        node = tree_api.tree.get_node_under_cursor()
+        if node ~= nil then
+            --tree_api.node.open.tab()
+            print( node.absolute_path)   -- この方法で絶対パスが取得可能
+        else
+            print( "No!!")
+        end
+
     end
 
     ---------- User Command
