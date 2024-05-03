@@ -53,11 +53,13 @@ M.setup = function(args)
 
     M.api_test = function()
         --module.is_wezterm_preview_open()
-        print( ("--format=%s"):format("json") )
-
-
-
-
+        --print( ("--format=%s"):format("json") )
+        print(
+          "wezterm " ..
+          "cli " ..
+          "list " ..
+          ("--format=%s"):format("json") 
+        )
     end
 
     ---------- User Command
