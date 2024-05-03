@@ -1,4 +1,6 @@
 -- main module file
+
+-- load module
 local module = require("img_viewer.module")
 
 local nvim_tree = require("nvim-tree")
@@ -14,6 +16,8 @@ local config = {
 
 ---@class MyModule
 local M = {}
+
+
 
 ---@type Config
 M.config = config
@@ -39,11 +43,16 @@ M.setup = function(args)
         node = tree_api.tree.get_node_under_cursor()
         if node ~= nil then
             --tree_api.node.open.tab()
-            print( node.absolute_path)   -- この方法で絶対パスが取得可能
+            print( node.absolute_path)  -- この方法で絶対パスが取得可能
+            print( node.type)           -- この方法で絶対タイプ取得
         else
             print( "No!!")
         end
 
+    end
+
+    M.api_test = function()
+        module.is_wezterm_preview_open()
     end
 
     ---------- User Command
