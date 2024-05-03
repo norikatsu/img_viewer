@@ -113,12 +113,15 @@ local sendCommandToWeztermPane = function(wezterm_pane_id, command)
 end
 
 local function listWeztermPanes()
-     local cli_result = vim.system({
+     --local cli_result = vim.system({
+     --local cli_result = utils.system({
+     local cli_result = vim.fn.system({
           "wezterm",
           "cli",
           "list",
           ("--format=%s"):format("json"),
-     }, { text = true }):wait()
+     }, { text = true }):wait() --  waitがない場合終了を待たないで次のスクリプトを実行する
+                                -- vim の system  vim.fn.system() はデフォルトでブロック処理を行う
      local json = vim.json.decode(cli_result.stdout)
      local panes = vim.iter(json):map(_l("obj: { pane_id = obj.pane_id, tab_id = obj.tab_id }"))
 
@@ -237,9 +240,6 @@ M.weztermPreview = {
 
 
 -------------------------------------------------- Debug Code
---M.is_wezterm_preview_open = is_wezterm_preview_open
-M.is_wezterm_preview_open = function()
-    print("Hello in Module")
-end
+M.is_wezterm_preview_open = is_wezterm_preview_open
 
 return M
