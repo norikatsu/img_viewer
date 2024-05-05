@@ -43,8 +43,9 @@ M.setup = function(args)
         node = tree_api.tree.get_node_under_cursor()
         if node ~= nil then
             --tree_api.node.open.tab()
-            print( node.absolute_path)  -- この方法で絶対パスが取得可能
-            print( node.type)           -- この方法で絶対タイプ取得
+            print( node.absolute_path)   -- この方法で絶対パスが取得可能
+            print( node.type)            -- この方法で file / dir が判別可能
+            print( node.Node )
         else
             print( "No!!")
         end
