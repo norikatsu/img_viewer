@@ -113,9 +113,7 @@ local sendCommandToWeztermPane = function(wezterm_pane_id, command)
 end
 
 local function listWeztermPanes()
-     --local cli_result = vim.system({
-     --local cli_result = utils.system({
-     local cli_result = vim.fn.system({
+     local cli_result = vim.system({
           "wezterm",
           "cli",
           "list",

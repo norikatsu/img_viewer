@@ -51,15 +51,105 @@ M.setup = function(args)
 
     end
 
+
+    local function tprint (tbl, indent)
+        if not indent then indent = 0 end
+        local toprint = string.rep(" ", indent) .. "{\r\n"
+        indent = indent + 2 
+        for k, v in pairs(tbl) do
+            toprint = toprint .. string.rep(" ", indent)
+            if (type(k) == "number") then
+                toprint = toprint .. "[" .. k .. "] = "
+            elseif (type(k) == "string") then
+                toprint = toprint  .. k ..  "= "   
+            end
+            if (type(v) == "number") then
+                toprint = toprint .. v .. ",\r\n"
+            elseif (type(v) == "string") then
+                toprint = toprint .. "\"" .. v .. "\",\r\n"
+            elseif (type(v) == "table") then
+                toprint = toprint .. tprint(v, indent + 2) .. ",\r\n"
+            else
+                toprint = toprint .. "\"" .. tostring(v) .. "\",\r\n"
+            end
+        end
+        toprint = toprint .. string.rep(" ", indent-2) .. "}"
+        return toprint
+    end
+
+
     M.api_test = function()
         --module.is_wezterm_preview_open()
         --print( ("--format=%s"):format("json") )
+
+        local cli_result = vim.fn.system(
+             "wezterm " ..
+             "cli "     ..
+             "list "    ..
+             ("--format=%s"):format("json")
+             )
+        --print(cli_result) 
+        local json = vim.json.decode( cli_result )
+        --local panes = vim.iter( json ):map(_l("obj: { pane_id = obj.pane_id, tab_id = obj.tab_id }"))   --NGNGNG ???
+        --print( panes)
+
+        --print( vim.inspect(json[1]) )
+        --print( #json ) --リスト要素数参照
+
+        local json = vim.json.decode('{"bar":[],"foo":{},"zub":null} ')  
+        --print( vim.inspect(json) )
+        local panes = vim.iter( json )
+        print( panes)
+
+
+        --vim.print( vim.json.decode('{"bar":[],"foo":{},"zub":null} ') )   -- vim.print() を使うとオブジェクトが正しく表示
+        --vim.print(json["bar"])
+
+        -- 辞書型の分解参照 OKバージョン
+        -- for k, v in pairs(json) do
+        --     print(k)
+        --     --print( vim.inspect(v) )
+        --     print( v.cursor_x ) 
+        -- end
+
+
+
+        --local tbl0 = { "first", "Second", "Third"}
+        --table.insert(tbl0,"Fortth")
+        ----print( vim.inspect(tbl0) )  --
+        --print( tbl0[1] )
+
+        --vim.print( json[0] ) 
+        --local panes = vim.iter( json ):map(_l("obj: { pane_id = obj.pane_id, tab_id = obj.tab_id }"))
+        --print( panes ) 
+
+
+
+        ------- iter sample
+        local map = {
+          item = {
+            file = 'test',
+          },
+          item_2 = {
+            file = 'test',
+          },
+          item_3 = {
+            file = 'test',
+          },
+        }
+
+        -- NOTE: removing the `pairs` results in the same output
+        local output = vim.iter(pairs(map)):map(function(key, value)
+          return { [key] = value.file }
+        end):totable()
+
         print(
-          "wezterm " ..
-          "cli " ..
-          "list " ..
-          ("--format=%s"):format("json") 
+          vim.inspect(output)
         )
+
+
+
+
     end
 
     ---------- User Command
