@@ -16,8 +16,8 @@ img_viewer.setup() -- setup() しないと使えないように作成した場�
 -- 確認したい関数
 --img_viewer.hello()
 --img_viewer.tree_open()
---img_viewer.tree_get()
+img_viewer.tree_get()
 
-img_viewer.api_test()
+--img_viewer.api_test()
 --module.is_wezterm_preview_open()
 

@@ -39,43 +39,48 @@ M.setup = function(args)
         tree_api.tree.toggle()
     end
 
+
     M.tree_get = function()
         node = tree_api.tree.get_node_under_cursor()
+
         if node ~= nil then
             --tree_api.node.open.tab()
-            print( node.absolute_path)   -- この方法で絶対パスが取得可能
-            print( node.type)            -- この方法で file / dir が判別可能
-            print( node.Node )
+            --$ print( node.absolute_path)   -- この方法で絶対パスが取得可能
+            --$ print( node.type)            -- この方法で file / dir が判別可能
+            --$ print( node.Node )
+
+
+            -- Debug : Check All Data 
+            print( "ParentNode", node.ParentNode)
+            print( "name", node.name )
+            print( "BaseNode", node.BaseNode)
+            print( "absolute_path", node.absolute_path )
+            print( "executable", node.executable )
+            print( "fs_stat", node.fs_stat )
+            print( "git_status", node.git_status )
+            print( "hidden", node.hidden )
+            print( "name", node.name )
+            print( "parent", node.parent )
+            print( "type", node.type )
+            print( "watcher", node.watcher )
+            print( "diag_status", node.diag_status )
+            print( "DirNode", node.DirNode )
+            print( "has_children", node.has_children )
+            print( "group_next", node.group_next )
+            print( "nodes", node.nodes )
+            print( "open", node.open )
+            print( "FileNode", node.FileNode )
+            print( "extension", node.extension )
+            print( "SymlinkDirNode", node.SymlinkDirNode )
+            print( "link_to", node.link_to )
+            print( "SymlinkFileNode", node.SymlinkFileNode )
+            print( "link_to", node.link_to )
+            print( "SymlinkNode", node.SymlinkNode )
+            print( "Node", node.Node )
+
         else
             print( "No!!")
         end
-
-    end
-
-
-    local function tprint (tbl, indent)
-        if not indent then indent = 0 end
-        local toprint = string.rep(" ", indent) .. "{\r\n"
-        indent = indent + 2 
-        for k, v in pairs(tbl) do
-            toprint = toprint .. string.rep(" ", indent)
-            if (type(k) == "number") then
-                toprint = toprint .. "[" .. k .. "] = "
-            elseif (type(k) == "string") then
-                toprint = toprint  .. k ..  "= "   
-            end
-            if (type(v) == "number") then
-                toprint = toprint .. v .. ",\r\n"
-            elseif (type(v) == "string") then
-                toprint = toprint .. "\"" .. v .. "\",\r\n"
-            elseif (type(v) == "table") then
-                toprint = toprint .. tprint(v, indent + 2) .. ",\r\n"
-            else
-                toprint = toprint .. "\"" .. tostring(v) .. "\",\r\n"
-            end
-        end
-        toprint = toprint .. string.rep(" ", indent-2) .. "}"
-        return toprint
     end
 
 
