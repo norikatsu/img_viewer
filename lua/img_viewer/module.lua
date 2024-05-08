@@ -30,10 +30,13 @@ local function isImage(url)
      local extension = url:match("^.+(%..+)$")
      local imageExt = { ".bmp", ".jpg", ".jpeg", ".png", ".gif" }
 
-     return vim.iter(imageExt):any(function(ext)
+     return vim.iter(imageExt):any(function(ext)  -- imageExt 内にあるパターンとマッチするかチェック
           return extension == ext
      end)
 end
+
+
+
 
 local function geEntryAbsolutePath()
      local oil = require("oil")
@@ -56,7 +59,7 @@ M.openWithQuickLook = {
 
 local OIL_PREVIEW_ENTRY_ID_VAR_NAME = "OIL_PREVIEW_ENTRY_ID"
 local function getNeovimWeztermPane()
-     local wezterm_pane_id = vim.env.WEZTERM_PANE
+     local wezterm_pane_id = vim.env.WEZTERM_PANE               -- 現在の pane id を環境変数から参照
      if not wezterm_pane_id then
           vim.notify("Wezterm pane not found", vim.log.levels.ERROR)
           return
@@ -121,7 +124,7 @@ local function listWeztermPanes()
      }, { text = true }):wait() --  waitがない場合終了を待たないで次のスクリプトを実行する
                                 -- vim の system  vim.fn.system() はデフォルトでブロック処理を行う
      local json = vim.json.decode(cli_result.stdout)
-     local panes = vim.iter(json):map(_l("obj: { pane_id = obj.pane_id, tab_id = obj.tab_id }"))
+     local panes = vim.iter(json):map(_l("obj: { pane_id = obj.pane_id, tab_id = obj.tab_id }"))  -- 複数あるタブの pane id, tab id のリストを作成
 
      return panes
 end
@@ -129,15 +132,16 @@ end
 local function getPreviewWeztermPaneId()
      local panes = listWeztermPanes()
      local neovim_wezterm_pane_id = getNeovimWeztermPane()
-     local current_tab_id = assert(panes:find(function(obj)
+     local current_tab_id = assert(panes:find(function(obj)                 -- 現在の pane が存在する タブの tab idを取得
           return obj.pane_id == neovim_wezterm_pane_id
      end)).tab_id
-     local preview_pane = panes:find(function(obj)
+
+     local preview_pane = panes:find(function(obj)                          -- panes リスト内で function 内条件が成立するモノを返す
           return --
-               obj.tab_id == current_tab_id --
+               obj.tab_id == current_tab_id --  -- 現在のタブで 克 現在のpane より大きい値のpane id 
                     and tonumber(obj.pane_id) > tonumber(neovim_wezterm_pane_id) -- new pane id should be greater than current pane id
      end)
-     return preview_pane ~= nil and preview_pane.pane_id or nil
+     return preview_pane ~= nil and preview_pane.pane_id or nil      -- preview_pane がnil でない場合には そのpane_id を返し、そうでないならnil を返す
 end
 
 local function openWeztermPreviewPane()

@@ -83,6 +83,37 @@ M.setup = function(args)
         --module.is_wezterm_preview_open()
         --print( ("--format=%s"):format("json") )
 
+
+        -- 正規表現テスト
+        --local url = "imagefile.jpg"
+        --local extension = url:match("^.+(%..+)$")
+        --local imageExt = { ".bmp", ".jpg", ".jpeg", ".png", ".gif" }
+        --print("extension : ", extension)
+
+
+
+
+        -- wezterm cli  : split pane exe
+        --local _opt = opt or {}
+        --local percent = _opt.percent or 30
+        --local direction = _opt.direction or "right"
+
+        --local cmd = vim.fn.system( 
+        --     "wezterm "     ..
+        --     "cli "         ..
+        --     "split-pane "  ..
+        --     (" --percent=%d"):format(percent) ..
+        --     (" --%s"):format(direction) ..
+        --     " -- "        ..
+        --     "pwsh"
+        --     )
+
+        --local wezterm_pane_id = assert(tonumber( cmd ))
+        --print( "Open ID :" , wezterm_pane_id )
+
+
+
+        -- wezterm cli  : get list
         local cli_result = vim.fn.system(
              "wezterm " ..
              "cli "     ..
@@ -94,13 +125,13 @@ M.setup = function(args)
         --local panes = vim.iter( json ):map(_l("obj: { pane_id = obj.pane_id, tab_id = obj.tab_id }"))   --NGNGNG ???
         --print( panes)
 
-        --print( vim.inspect(json[1]) )
+        --print( vim.inspect(json) )
         --print( #json ) --リスト要素数参照
 
-        local json = vim.json.decode('{"bar":[],"foo":{},"zub":null} ')  
+        --local json = vim.json.decode('{"bar":[],"foo":{},"zub":null} ')  
         --print( vim.inspect(json) )
-        local panes = vim.iter( json )
-        print( panes)
+        --local panes = vim.iter( json )
+        --print( panes)
 
 
         --vim.print( vim.json.decode('{"bar":[],"foo":{},"zub":null} ') )   -- vim.print() を使うとオブジェクトが正しく表示
@@ -126,29 +157,71 @@ M.setup = function(args)
 
 
 
-        ------- iter sample
-        local map = {
-          item = {
-            file = 'test',
-          },
-          item_2 = {
-            file = 'test',
-          },
-          item_3 = {
-            file = 'test',
-          },
-        }
 
-        -- NOTE: removing the `pairs` results in the same output
-        local output = vim.iter(pairs(map)):map(function(key, value)
-          return { [key] = value.file }
-        end):totable()
-
-        print(
-          vim.inspect(output)
-        )
+        --============================================================================================================
+        ------- iter sample --> iter が読み込めないのでfor で代用
+        panes = {}
+        for i = 1 , #json do
+            local pane = {pane_id = json[i].pane_id, tab_id = json[i].tab_id}
+            table.insert( panes, pane)
+        end
+        -- print( vim.inspect(panes))
 
 
+        local wezterm_pane_id = vim.env.WEZTERM_PANE               -- 現在の pane id を環境変数から参照
+        -- print (wezterm_pane_id)
+        local neovim_wezterm_pane_id = tonumber(wezterm_pane_id) --getNeovimWeztermPane()
+
+        -- 現在の TABのtab_id を返す
+        local current_tab_id = nil
+        for i = 1 , #panes do
+            print( i, panes[i].pane_id)
+            if (panes[i].pane_id == neovim_wezterm_pane_id) then
+                current_tab_id = panes[i].tab_id
+                print("Hit:", panes[i].pane_id, panes[i].tab_id)
+            end
+        end
+        -- print("current_tab_id : ", current_tab_id)
+
+
+
+        -- 現在の TAB の pane の中で現在の paneより大きい pane_id を返す
+        local preview_pane = nil                          -- panes リスト内で function 内条件が成立するモノを返す
+        for i = 1 , #panes do
+            if (panes[i].tab_id == current_tab_id) then
+                if (panes[i].pane_id > neovim_wezterm_pane_id) then
+                --if (panes[i].pane_id > -1 ) then
+                    print( "Large Hit!")
+                    preview_pane = panes[i]
+                    break
+                end
+            end
+        end
+
+        if (preview_pane ~= nil) then
+            --return preview_pane.pane_id
+            --print( "preview_pane.pane_id :", preview_pane.pane_id) 
+        else
+            --return nil
+            -- print( "nil") 
+        end
+
+
+        
+
+
+
+
+
+        --local preview_pane = panes:find(function(obj)                          -- panes リスト内で function 内条件が成立するモノを返す
+        --     return --
+        --          obj.tab_id == current_tab_id --  -- 現在のタブで 克 現在のpane より大きい値のpane id 
+        --               and tonumber(obj.pane_id) > tonumber(neovim_wezterm_pane_id) -- new pane id should be greater than current pane id
+        --end)
+        --return preview_pane ~= nil and preview_pane.pane_id or nil      -- preview_pane がnil でない場合には そのpane_id を返し、そうでないならnil を返す
+
+
+        --============================================================================================================
 
 
     end
