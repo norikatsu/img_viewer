@@ -257,18 +257,24 @@ M.weztermPreview = {
                 if vim.api.nvim_get_current_buf() ~= bufnr then
                     return
                 end
-                local entry = oil.get_cursor_entry()
+
+                --local entry = oil.get_cursor_entry()
+                local entry = nvim_tree_api.tree.get_node_under_cursor()
+
+
                 -- Don't update in visual mode. Visual mode implies editing not browsing,
                 -- and updating the preview can cause flicker and stutter.
 
 
-                if entry ~= nil and not util.is_visual_mode() then
+                --if entry ~= nil and not util.is_visual_mode() then
+                if entry ~= nil then
                     local preview_pane_id = openWeztermPreviewPane()
                     activeWeztermPane(neovim_wezterm_pane_id)
 
-                    if perviw_entry_id == entry.id then
-                        return
-                    end
+                    --for "oil plugin"
+                    --if perviw_entry_id == entry.id then
+                    --    return
+                    --end
 
                     if prev_cmd == "bat" then
                         sendCommandToWeztermPane(preview_pane_id, "q")
