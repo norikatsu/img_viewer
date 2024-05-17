@@ -39,6 +39,20 @@ M.setup = function(args)
         tree_api.tree.toggle()
     end
 
+    ---------- nvim-tree api Event
+    M.event = function()
+        local Event = tree_api.events.Event
+
+        --tree_api.events.subscribe(Event.TreeOpen, function()
+        --    print("TreeOpen")
+        --end)
+
+        tree_api.events.subscribe(Event.TreeRendered, function()
+            print("TreeRendered")
+        end)
+    end
+
+
 
     M.tree_get = function()
         node = tree_api.tree.get_node_under_cursor()

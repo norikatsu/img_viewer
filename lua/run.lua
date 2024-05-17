@@ -10,13 +10,16 @@ local module     = require("img_viewer.module")
 
 
 -- 関数呼び出し
-img_viewer.setup() -- setup() しないと使えないように作成した場合には必須
+----- 事前準備 setup() しないと使えないように作成した場合には必須
+img_viewer.setup()  
 
 
 -- 確認したい関数
 --img_viewer.hello()
 --img_viewer.tree_open()
-img_viewer.tree_get()
+--img_viewer.tree_get()
+
+img_viewer.event()
 
 --img_viewer.api_test()
 --module.is_wezterm_preview_open()
