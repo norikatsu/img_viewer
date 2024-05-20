@@ -17,9 +17,11 @@ img_viewer.setup()
 -- 確認したい関数
 --img_viewer.hello()
 --img_viewer.tree_open()
---img_viewer.tree_get()
+--img_viewer.tree_close()
+img_viewer.tree_get()
+--img_viewer.event()
 
-img_viewer.event()
+
 
 --img_viewer.api_test()
 --module.is_wezterm_preview_open()
