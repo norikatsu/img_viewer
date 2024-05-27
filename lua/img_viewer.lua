@@ -64,17 +64,34 @@ M.setup = function(args)
     -----
 
     M.tree_get = function()
-        print("set key L")
-        require('neo-tree').setup {
-            mappings = {
-                ['L'] = function(state)
+
+        if (vim.o.filetype == "neo-tree") then
+            local position = vim.api.nvim_buf_get_var(0, "neo_tree_position")
+            local source   = vim.api.nvim_buf_get_var(0, "neo_tree_source")
+            --print("position : ", position, "  \\  source : ", source)
+
+            if position ~= "current" then
+                -- close_if_last_window just doesn't make sense for a split style
+                local state = require("neo-tree.sources.manager").get_state(source)
+                if state ~= nil then
+                    --print ("state : " , state)
+
                     local node = state.tree:get_node()
                     local filepath = node:get_id()
                     local filename = node.name
-                    print( "Filename : ",  filename)
+                    local type     = node.type
+                    local modify = vim.fn.fnamemodify
+
+                    print("filepath :", filepath, "  // filename : ", filename , "  // type : " , type)
+
+
                 end
-            }
-        }
+            end
+
+
+        else
+            print("vim.o.filetype : ", vim.o.filetype)
+        end
     end
 
     --M.tree_get = function()
