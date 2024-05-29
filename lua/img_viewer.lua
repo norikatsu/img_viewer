@@ -4,8 +4,8 @@
 local module = require("img_viewer.module")
 
 local neo_tree = require("neo-tree")
-local command = require("neo-tree.command")
-
+local command  = require("neo-tree.command")
+local manager  = require("neo-tree.sources.manager")
 
 
 ---@class Config
@@ -72,7 +72,7 @@ M.setup = function(args)
 
             if position ~= "current" then
                 -- close_if_last_window just doesn't make sense for a split style
-                local state = require("neo-tree.sources.manager").get_state(source)
+                local state = manager.get_state(source)
                 if state ~= nil then
                     --print ("state : " , state)
 
@@ -81,9 +81,9 @@ M.setup = function(args)
                     local filename = node.name
                     local type     = node.type
                     local modify = vim.fn.fnamemodify
-
-                    print("filepath :", filepath, "  // filename : ", filename , "  // type : " , type)
-
+                    if type == "file" then
+                        print("filepath :", filepath, " , filename : ", filename )
+                    end
 
                 end
             end

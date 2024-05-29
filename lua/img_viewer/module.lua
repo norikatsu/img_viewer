@@ -1,9 +1,11 @@
 ---@class CustomModule
 -- Ref URL : https://zenn.dev/vim_jp/articles/5b5f704de07673
 
+local command  = require("neo-tree.command")
+local manager  = require("neo-tree.sources.manager")
+
+
 local M = {}
-
-
 
 ---Debounce a function
 ---@param func function
@@ -41,16 +43,39 @@ end
 
 local function geEntryAbsolutePath()
     
-    local nvim_tree_api  = require("nvim-tree.api")
+    --local nvim_tree_api  = require("nvim-tree.api")
 
-    node = nvim_tree_api.tree.get_node_under_cursor()
+    --node = nvim_tree_api.tree.get_node_under_cursor()
 
-    if node ~= nil then
-        --tree_api.node.open.tab()
-        return node.absolute_path   -- 絶対パス
-    else
-        return nil
+    --if node ~= nil then
+    --    --tree_api.node.open.tab()
+    --    return node.absolute_path   -- 絶対パス
+    --else
+    --    return nil
+    --end
+
+    if (vim.o.filetype == "neo-tree") then
+        local position = vim.api.nvim_buf_get_var(0, "neo_tree_position")
+        local source   = vim.api.nvim_buf_get_var(0, "neo_tree_source")
+
+        if position ~= "current" then
+            local state = manager.get_state(source)
+            if state ~= nil then
+                --print ("state : " , state)
+
+                local node = state.tree:get_node()
+                local filepath = node:get_id()
+                --local filename = node.name
+                --local type     = node.type
+                --local modify = vim.fn.fnamemodify
+                return filepath
+            end
+        end
     end
+
+    -- 条件外の場合
+    return nil
+
 end
 
 
@@ -259,15 +284,28 @@ M.weztermPreview = {
                 end
 
                 --local entry = oil.get_cursor_entry()
-                local entry = nvim_tree_api.tree.get_node_under_cursor()
+                --local entry = nvim_tree_api.tree.get_node_under_cursor()
+                local node = nil  --  元はentry だったが node に変更
+                if (vim.o.filetype == "neo-tree") then
+                    local position = vim.api.nvim_buf_get_var(0, "neo_tree_position")
+                    local source   = vim.api.nvim_buf_get_var(0, "neo_tree_source")
+                    --print("position : ", position, "  \\  source : ", source)
 
+                    if position ~= "current" then
+                        -- close_if_last_window just doesn't make sense for a split style
+                        local state = manager.get_state(source)
+                        if state ~= nil then
+                            node = state.tree:get_node()
+                        end
+                    end
+                end
 
                 -- Don't update in visual mode. Visual mode implies editing not browsing,
                 -- and updating the preview can cause flicker and stutter.
 
 
                 --if entry ~= nil and not util.is_visual_mode() then
-                if entry ~= nil then
+                if node ~= nil then
                     local preview_pane_id = openWeztermPreviewPane()
                     activeWeztermPane(neovim_wezterm_pane_id)
 
@@ -283,22 +321,22 @@ M.weztermPreview = {
 
                     local path = assert(geEntryAbsolutePath())
                     local command = ""
-                    if entry.type == "directory" then
+                    if node.type == "directory" then
                         local cmd = "ls -l"
                         command = command .. ("%s %s"):format(cmd, path)
                         prev_cmd = cmd
-                    elseif entry.type == "file" and isImage(path) then
+                    elseif node.type == "file" and isImage(path) then
                         local cmd = "wezterm imgcat"
                         command = command .. ("%s %s"):format(cmd, path)
                         prev_cmd = cmd
-                    elseif entry.type == "file" then
+                    elseif node.type == "file" then
                         local cmd = "bat"
                         command = command .. ("%s %s"):format(cmd, path)
                         prev_cmd = cmd
                     end
 
                     sendCommandToWeztermPane(preview_pane_id, command)
-                    previw_entry_id = entry.id
+                    --previw_entry_id = entry.id
                 end
             end),
             50
