@@ -47,24 +47,23 @@ M.setup = function(args)
         command.execute({ action = "close" })
     end
 
-    ---------- nvim-tree api Event
-    M.event = function()
-        local Event = tree_api.events.Event
+    ------------ nvim-tree api Event  -->  nvim-neo-tree ではイベント検出用API が存在しない
+    --M.event = function()
+    --    local Event = tree_api.events.Event
 
-        --tree_api.events.subscribe(Event.TreeOpen, function()
-        --    print("TreeOpen")
-        --end)
+    --    --tree_api.events.subscribe(Event.TreeOpen, function()
+    --    --    print("TreeOpen")
+    --    --end)
 
-        tree_api.events.subscribe(Event.TreeRendered, function()
-            print("TreeRendered")
-        end)
-    end
+    --    tree_api.events.subscribe(Event.TreeRendered, function()
+    --        print("TreeRendered")
+    --    end)
+    --end
 
 
     -----
 
     M.tree_get = function()
-
         if (vim.o.filetype == "neo-tree") then
             local position = vim.api.nvim_buf_get_var(0, "neo_tree_position")
             local source   = vim.api.nvim_buf_get_var(0, "neo_tree_source")
@@ -74,23 +73,18 @@ M.setup = function(args)
                 -- close_if_last_window just doesn't make sense for a split style
                 local state = manager.get_state(source)
                 if state ~= nil then
-                    --print ("state : " , state)
-
-                    local node = state.tree:get_node()
-                    local filepath = node:get_id()
-                    local filename = node.name
-                    local type     = node.type
-                    local modify = vim.fn.fnamemodify
-                    if type == "file" then
-                        print("filepath :", filepath, " , filename : ", filename )
+                    if state.tree ~= nil then
+                        local node = state.tree:get_node() --これが機能しない場合あり
+                        if node ~=nil then
+                            local filepath = node:get_id()
+                            local filename = node.name
+                            -- local type     = node.type
+                            -- local modify = vim.fn.fnamemodify
+                            print("file :", filepath )
+                        end
                     end
-
                 end
             end
-
-
-        else
-            print("vim.o.filetype : ", vim.o.filetype)
         end
     end
 

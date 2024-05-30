@@ -102,6 +102,7 @@ local function getNeovimWeztermPane()
     return tonumber(wezterm_pane_id)
 end
 
+-- neovim が開いているPane にフォーカスをもどす
 local activeWeztermPane = function(wezterm_pane_id)
     cmd = vim.fn.system( 
         "wezterm "         ..
