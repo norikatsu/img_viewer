@@ -34,7 +34,33 @@ M.setup = function(args)
         print("Hello at lua...")
     end
 
-    ---------- nvim-tree api 
+
+    ---------- Main Function  ----------
+    M.weztermPreview = function()
+        module.weztermPreview.callback()
+    end
+
+
+
+    ---------- wezterm APIs ----------
+    M.getNeovimWeztermPane = function()
+        ret = module.getNeovimWeztermPane()
+        print("Call API", ret)
+    end
+
+    M.activeWeztermPane = function( pane_id )
+        ret = module.activeWeztermPane( pane_id )
+        print("activeWeztermPane",ret)
+    end
+
+
+    M.openNewWeztermPane = function() 
+        ret = module.openNewWeztermPane()
+        print("openNewWeztermPane", ret)
+    end
+
+    ---------- neo-tree APIs ----------
+    ----------  focus (open <> close  , toggle)
     M.tree_open = function()
         command.execute({ 
             action = "focus",
@@ -42,7 +68,7 @@ M.setup = function(args)
         })
     end
 
-    ---------- nvim-tree api 
+    ---------- close 
     M.tree_close = function()
         command.execute({ action = "close" })
     end
@@ -59,6 +85,8 @@ M.setup = function(args)
     --        print("TreeRendered")
     --    end)
     --end
+
+
 
 
     -----
@@ -257,6 +285,11 @@ M.setup = function(args)
     vim.api.nvim_create_user_command("MyHello", require("img_viewer").hello, {})
     --vim.api.nvim_create_user_command("MyOpen",  require("img_viewer").tree_open, {})
     vim.api.nvim_create_user_command("MyGet",   require("img_viewer").tree_get, {})
+
+
+    ---------- Main Function  ----------
+    vim.api.nvim_create_user_command("MywezPreview",   require("img_viewer").weztermPreview , {})
+
 end
 
 

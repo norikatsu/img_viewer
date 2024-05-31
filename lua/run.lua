@@ -18,8 +18,17 @@ img_viewer.setup()
 --img_viewer.hello()
 --img_viewer.tree_open()
 --img_viewer.tree_close()
-img_viewer.tree_get()
+--img_viewer.tree_get()
 --img_viewer.event()
+
+
+-- wezterm APIs
+--img_viewer.getNeovimWeztermPane()
+--img_viewer.activeWeztermPane( 3 )
+--img_viewer.openNewWeztermPane() 
+
+-- Main function
+img_viewer.weztermPreview()
 
 
 

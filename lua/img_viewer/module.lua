@@ -93,7 +93,8 @@ end
 
 
 --local OIL_PREVIEW_ENTRY_ID_VAR_NAME = "OIL_PREVIEW_ENTRY_ID"
-local function getNeovimWeztermPane()
+--local function getNeovimWeztermPane()
+local getNeovimWeztermPane = function()
     local wezterm_pane_id = vim.env.WEZTERM_PANE               -- 現在の pane id を環境変数から参照
     if not wezterm_pane_id then
         vim.notify("Wezterm pane not found", vim.log.levels.ERROR)
@@ -101,6 +102,8 @@ local function getNeovimWeztermPane()
     end
     return tonumber(wezterm_pane_id)
 end
+
+
 
 -- neovim が開いているPane にフォーカスをもどす
 local activeWeztermPane = function(wezterm_pane_id)
@@ -114,8 +117,7 @@ local activeWeztermPane = function(wezterm_pane_id)
 end
 
 
-
----@param opt table
+--- param opt table
 local openNewWeztermPane = function(opt)
     local _opt = opt or {}
     local percent = _opt.percent or 30
@@ -131,12 +133,15 @@ local openNewWeztermPane = function(opt)
          "pwsh"
          )
 
+
     local wezterm_pane_id = assert(tonumber(cmd))
     return wezterm_pane_id
 end
 
+
+
 local closeWeztermPane = function(wezterm_pane_id)
-    local cmd = vim.fm.system(
+    local cmd = vim.fn.system(
          "wezterm "        ..
          "cli "            ..
          "kill-pane "      ..
@@ -147,16 +152,37 @@ end
 
 
 local sendCommandToWeztermPane = function(wezterm_pane_id, command)
-    local cmd = vim.fm.system(
-          "echo "           ..
-          ("'%s' "):format(command) ..
-          " | "             ..
+    --local cmd = vim.fn.system(
+    --      "echo "           ..
+    --      ("'%s' "):format(command) ..
+    --      " | "             ..
+    --      "wezterm "        ..
+    --      "cli "            ..
+    --      "send-text "      ..
+    --      "--no-paste "     ..
+    --      (" --pane-id=%d"):format(wezterm_pane_id)
+
+    local cmd = vim.fn.system(
           "wezterm "        ..
           "cli "            ..
           "send-text "      ..
           "--no-paste "     ..
-          (" --pane-id=%d"):format(wezterm_pane_id)
+          (" --pane-id=%d"):format(wezterm_pane_id) ..
+          (" '%s' `n"):format(command) 
+          --("'%s' \\n"):format(command) 
     )
+    --local execmd = 
+    --      "wezterm "        ..
+    --      "cli "            ..
+    --      "send-text "      ..
+    --      "--no-paste "     ..
+    --      (" --pane-id=%d"):format(wezterm_pane_id) ..
+    --      (" '%s\\n"):format(command) 
+   
+    --local cmd = vim.fn.system( execmd )
+
+    --DBG
+    print("execmd:",cmd ,"  pane_id:", wezterm_pane_id)
     return cmd
 end
 
@@ -343,34 +369,51 @@ M.weztermPreview = {
             50
         )
 
+        -- 上記で定義した 処理を一度実行(取得ファイルパスに対して画像表示など)
         updateWeztermPreview()
 
-        local config = require("oil.config")
-        if config.preview.update_on_cursor_moved then
-            vim.api.nvim_create_autocmd("CursorMoved", {
-                desc = "Update oil wezterm preview",
-                group = "Oil",
-                buffer = bufnr,
-                callback = function()
-                    updateWeztermPreview()
-                end,
-            })
-        end
 
-        vim.api.nvim_create_autocmd({ "BufLeave", "BufDelete", "VimLeave" }, {
-            desc = "Close oil wezterm preview",
-            group = "Oil",
-            buffer = bufnr,
-            callback = function()
-                 closeWeztermPane(getPreviewWeztermPaneId())
-            end,
-        })
+
+        -- ファイラー内でカーソル移動のイベントで  updateWeztermPreview() を再実行
+        --  ----> 一旦無効化 even 発生は neo-tree 内部で実行する必要ありのため
+        --local config = require("oil.config")
+        --if config.preview.update_on_cursor_moved then
+        --    vim.api.nvim_create_autocmd("CursorMoved", {
+        --        desc = "Update oil wezterm preview",
+        --        group = "Oil",
+        --        buffer = bufnr,
+        --        callback = function()
+        --            updateWeztermPreview()
+        --        end,
+        --    })
+        --end
+
+        -- バッファを閉じた時に image pane を閉じる
+        --  ----> 一旦無効化 設定 group が Oil になっているため 調査してからにする
+        --vim.api.nvim_create_autocmd({ "BufLeave", "BufDelete", "VimLeave" }, {
+        --    desc = "Close oil wezterm preview",
+        --    group = "Oil",
+        --    buffer = bufnr,
+        --    callback = function()
+        --         closeWeztermPane(getPreviewWeztermPaneId())
+        --    end,
+        --})
     end,
     desc = "Preview with Wezterm",
 }
 
 
--------------------------------------------------- Debug Code
+------------ Debug Code
+------------   inner local function を外部呼出しできるように M に紐づけ
 M.is_wezterm_preview_open = is_wezterm_preview_open
+
+M.getNeovimWeztermPane = getNeovimWeztermPane
+
+M.activeWeztermPane = activeWeztermPane
+
+M.openNewWeztermPane = openNewWeztermPane
+
+
+
 
 return M
