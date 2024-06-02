@@ -152,46 +152,6 @@ end
 
 
 local sendCommandToWeztermPane = function(wezterm_pane_id, command)
-    --local cmd = vim.fn.system(
-    --      "echo "           ..
-    --      ("'%s' "):format(command) ..
-    --      " | "             ..
-    --      "wezterm "        ..
-    --      "cli "            ..
-    --      "send-text "      ..
-    --      "--no-paste "     ..
-    --      (" --pane-id=%d"):format(wezterm_pane_id)
-
-    -- tmp local cmd = vim.fn.system(
-    -- tmp       "wezterm "        ..
-    -- tmp       "cli "            ..
-    -- tmp       "send-text "      ..
-    -- tmp       "--no-paste "     ..
-    -- tmp       (" --pane-id=%d"):format(wezterm_pane_id) ..
-    -- tmp       (" '%s' `n"):format(command) 
-    -- tmp       --("'%s' \\n"):format(command) 
-    -- tmp )
-
-
-    -- Ok_lv1 local cmd = vim.fn.system(
-    -- Ok_lv1       "wezterm "        ..
-    -- Ok_lv1       "cli "            ..
-    -- Ok_lv1       "send-text "      ..
-    -- Ok_lv1       "--no-paste "     ..
-    -- Ok_lv1       (" --pane-id=%d"):format(wezterm_pane_id) ..
-    -- Ok_lv1       " ls " 
-    -- Ok_lv1 )
-
-    -- 改行コードが 送れない
-    -- やはりNG  local cmd = vim.fn.system(
-    -- やはりNG        "wezterm "        ..
-    -- やはりNG        "cli "            ..
-    -- やはりNG        "send-text "      ..
-    -- やはりNG        --"--no-paste "     ..
-    -- やはりNG        (" --pane-id=%d"):format(wezterm_pane_id) ..
-    -- やはりNG        [[ ls //n]] 
-    -- やはりNG  )
-
     -- echo で送ってみる
     local cmd = vim.fn.system(
           "echo "           ..
@@ -206,7 +166,7 @@ local sendCommandToWeztermPane = function(wezterm_pane_id, command)
 
     --DBG
     --print("execmd:",command ,"  pane_id:", wezterm_pane_id)
-    print("pane_id:", wezterm_pane_id , "    Rtn :", cmd)
+    --print("pane_id:", wezterm_pane_id , "    Rtn :", cmd)
     return cmd
 end
 
@@ -254,13 +214,14 @@ local function getPreviewWeztermPaneId()
     -- 現在の TABのtab_id を返す
     local current_tab_id = nil
     for i = 1 , #panes do
-        print( i, panes[i].pane_id)
+        --DBG 
+        --print( i, panes[i].pane_id)
         if (panes[i].pane_id == neovim_wezterm_pane_id) then
             current_tab_id = panes[i].tab_id
-            print("Hit:", panes[i].pane_id, panes[i].tab_id)
+            --DBG  
+            --print("Hit:", panes[i].pane_id, panes[i].tab_id)
         end
     end
-    -- print("current_tab_id : ", current_tab_id)
 
 
     -- 現在の TAB の pane の中で現在の paneより大きい pane_id を返す
@@ -269,7 +230,8 @@ local function getPreviewWeztermPaneId()
         if (panes[i].tab_id == current_tab_id) then
             if (panes[i].pane_id > neovim_wezterm_pane_id) then
             --if (panes[i].pane_id > -1 ) then
-                print( "Large Hit!")
+                --DBG
+                --print( "Large Hit!")
                 preview_pane = panes[i]
                 break
             end

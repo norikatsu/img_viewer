@@ -116,23 +116,6 @@ M.setup = function(args)
         end
     end
 
-    --M.tree_get = function()
-    --    node = tree_api.tree.get_node_under_cursor()
-
-    --    if node ~= nil then
-    --        --tree_api.node.open.tab()
-    --        --$ print( node.absolute_path)   -- この方法で絶対パスが取得可能
-    --        --$ print( node.type)            -- この方法で file / dir が判別可能
-    --        --$ print( node.Node )
-
-
-    --        -- Debug : Check All Data 
-
-    --    else
-    --        print( "No!!")
-    --    end
-    --end
-
 
     M.api_test = function()
         --module.is_wezterm_preview_open()
@@ -144,7 +127,6 @@ M.setup = function(args)
         --local extension = url:match("^.+(%..+)$")
         --local imageExt = { ".bmp", ".jpg", ".jpeg", ".png", ".gif" }
         --print("extension : ", extension)
-
 
 
 
@@ -177,20 +159,6 @@ M.setup = function(args)
              )
         --print(cli_result) 
         local json = vim.json.decode( cli_result )
-        --local panes = vim.iter( json ):map(_l("obj: { pane_id = obj.pane_id, tab_id = obj.tab_id }"))   --NGNGNG ???
-        --print( panes)
-
-        --print( vim.inspect(json) )
-        --print( #json ) --リスト要素数参照
-
-        --local json = vim.json.decode('{"bar":[],"foo":{},"zub":null} ')  
-        --print( vim.inspect(json) )
-        --local panes = vim.iter( json )
-        --print( panes)
-
-
-        --vim.print( vim.json.decode('{"bar":[],"foo":{},"zub":null} ') )   -- vim.print() を使うとオブジェクトが正しく表示
-        --vim.print(json["bar"])
 
         -- 辞書型の分解参照 OKバージョン
         -- for k, v in pairs(json) do
@@ -198,7 +166,6 @@ M.setup = function(args)
         --     --print( vim.inspect(v) )
         --     print( v.cursor_x ) 
         -- end
-
 
 
         --local tbl0 = { "first", "Second", "Third"}
@@ -220,11 +187,9 @@ M.setup = function(args)
             local pane = {pane_id = json[i].pane_id, tab_id = json[i].tab_id}
             table.insert( panes, pane)
         end
-        -- print( vim.inspect(panes))
 
 
         local wezterm_pane_id = vim.env.WEZTERM_PANE               -- 現在の pane id を環境変数から参照
-        -- print (wezterm_pane_id)
         local neovim_wezterm_pane_id = tonumber(wezterm_pane_id) --getNeovimWeztermPane()
 
         -- 現在の TABのtab_id を返す
@@ -236,7 +201,6 @@ M.setup = function(args)
                 print("Hit:", panes[i].pane_id, panes[i].tab_id)
             end
         end
-        -- print("current_tab_id : ", current_tab_id)
 
 
 
@@ -252,28 +216,6 @@ M.setup = function(args)
                 end
             end
         end
-
-        if (preview_pane ~= nil) then
-            --return preview_pane.pane_id
-            --print( "preview_pane.pane_id :", preview_pane.pane_id) 
-        else
-            --return nil
-            -- print( "nil") 
-        end
-
-
-        
-
-
-
-
-
-        --local preview_pane = panes:find(function(obj)                          -- panes リスト内で function 内条件が成立するモノを返す
-        --     return --
-        --          obj.tab_id == current_tab_id --  -- 現在のタブで 克 現在のpane より大きい値のpane id 
-        --               and tonumber(obj.pane_id) > tonumber(neovim_wezterm_pane_id) -- new pane id should be greater than current pane id
-        --end)
-        --return preview_pane ~= nil and preview_pane.pane_id or nil      -- preview_pane がnil でない場合には そのpane_id を返し、そうでないならnil を返す
 
 
         --============================================================================================================
