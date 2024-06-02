@@ -130,7 +130,7 @@ local openNewWeztermPane = function(opt)
          (" --percent=%d"):format(percent) ..
          (" --%s"):format(direction)   ..
          " -- "                        ..
-         "pwsh"
+         "pwsh -NoProfile"
          )
 
 
@@ -162,27 +162,51 @@ local sendCommandToWeztermPane = function(wezterm_pane_id, command)
     --      "--no-paste "     ..
     --      (" --pane-id=%d"):format(wezterm_pane_id)
 
+    -- tmp local cmd = vim.fn.system(
+    -- tmp       "wezterm "        ..
+    -- tmp       "cli "            ..
+    -- tmp       "send-text "      ..
+    -- tmp       "--no-paste "     ..
+    -- tmp       (" --pane-id=%d"):format(wezterm_pane_id) ..
+    -- tmp       (" '%s' `n"):format(command) 
+    -- tmp       --("'%s' \\n"):format(command) 
+    -- tmp )
+
+
+    -- Ok_lv1 local cmd = vim.fn.system(
+    -- Ok_lv1       "wezterm "        ..
+    -- Ok_lv1       "cli "            ..
+    -- Ok_lv1       "send-text "      ..
+    -- Ok_lv1       "--no-paste "     ..
+    -- Ok_lv1       (" --pane-id=%d"):format(wezterm_pane_id) ..
+    -- Ok_lv1       " ls " 
+    -- Ok_lv1 )
+
+    -- 改行コードが 送れない
+    -- やはりNG  local cmd = vim.fn.system(
+    -- やはりNG        "wezterm "        ..
+    -- やはりNG        "cli "            ..
+    -- やはりNG        "send-text "      ..
+    -- やはりNG        --"--no-paste "     ..
+    -- やはりNG        (" --pane-id=%d"):format(wezterm_pane_id) ..
+    -- やはりNG        [[ ls //n]] 
+    -- やはりNG  )
+
+    -- echo で送ってみる
     local cmd = vim.fn.system(
+          "echo "           ..
+          ("'%s' "):format(command) ..
+          " | "             ..
           "wezterm "        ..
           "cli "            ..
           "send-text "      ..
           "--no-paste "     ..
-          (" --pane-id=%d"):format(wezterm_pane_id) ..
-          (" '%s' `n"):format(command) 
-          --("'%s' \\n"):format(command) 
+          (" --pane-id=%d"):format(wezterm_pane_id)
     )
-    --local execmd = 
-    --      "wezterm "        ..
-    --      "cli "            ..
-    --      "send-text "      ..
-    --      "--no-paste "     ..
-    --      (" --pane-id=%d"):format(wezterm_pane_id) ..
-    --      (" '%s\\n"):format(command) 
-   
-    --local cmd = vim.fn.system( execmd )
 
     --DBG
-    print("execmd:",cmd ,"  pane_id:", wezterm_pane_id)
+    --print("execmd:",command ,"  pane_id:", wezterm_pane_id)
+    print("pane_id:", wezterm_pane_id , "    Rtn :", cmd)
     return cmd
 end
 
@@ -340,6 +364,10 @@ M.weztermPreview = {
                     --if perviw_entry_id == entry.id then
                     --    return
                     --end
+                    -- 本来は上記のように正しく新しい pane ができシェルが起動しているかチェック
+                    -- 暫定でちょっと 待つ
+
+
 
                     if prev_cmd == "bat" then
                         sendCommandToWeztermPane(preview_pane_id, "q")
