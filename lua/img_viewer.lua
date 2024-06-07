@@ -59,6 +59,18 @@ M.setup = function(args)
         print("openNewWeztermPane", ret)
     end
 
+
+
+    M.weztermPreviewInit = function()
+        module.weztermPreviewInit()
+    end
+    
+    
+    M.weztermPreviewRun = function()
+        module.weztermPreviewRun()
+    end
+
+
     ---------- neo-tree APIs ----------
     ----------  focus (open <> close  , toggle)
     M.tree_open = function()
@@ -230,7 +242,9 @@ M.setup = function(args)
 
 
     ---------- Main Function  ----------
-    vim.api.nvim_create_user_command("MywezPreview",   require("img_viewer").weztermPreview , {})
+    vim.api.nvim_create_user_command("MywezPreview",     require("img_viewer").weztermPreview , {})
+    vim.api.nvim_create_user_command("MywezPreviewInit", require("img_viewer").weztermPreviewInit , {})
+    vim.api.nvim_create_user_command("MywezPreviewRun",  require("img_viewer").weztermPreviewRun , {})
 
 end
 

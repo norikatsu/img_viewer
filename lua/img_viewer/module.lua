@@ -393,6 +393,115 @@ M.weztermPreview = {
 }
 
 
+
+
+
+------------------------------ Main Function 分割版 ------------------------------ 
+local prev_cmd = nil
+local neovim_wezterm_pane_id = nil
+local bufnr = nil
+
+
+M.weztermPreviewInit = function()
+    if is_wezterm_preview_open() then
+        closeWeztermPane(getPreviewWeztermPaneId())
+    end
+
+    neovim_wezterm_pane_id = getNeovimWeztermPane()
+    bufnr = vim.api.nvim_get_current_buf()
+end
+
+
+M.weztermPreviewRun = function()
+    --local nvim_tree_api = require("nvim-tree.api")
+    --local perviw_entry_id = nil
+
+    --local prev_cmd = nil
+    --local neovim_wezterm_pane_id = getNeovimWeztermPane()
+    --local bufnr = vim.api.nvim_get_current_buf()
+
+    local updateWeztermPreview = debounce(
+        vim.schedule_wrap(function()
+            if vim.api.nvim_get_current_buf() ~= bufnr then
+                return
+            end
+
+            --local entry = oil.get_cursor_entry()
+            --local entry = nvim_tree_api.tree.get_node_under_cursor()
+            local node = nil  --  元はentry だったが node に変更
+            if (vim.o.filetype == "neo-tree") then
+                local position = vim.api.nvim_buf_get_var(0, "neo_tree_position")
+                local source   = vim.api.nvim_buf_get_var(0, "neo_tree_source")
+                --print("position : ", position, "  \\  source : ", source)
+
+                if position ~= "current" then
+                    -- close_if_last_window just doesn't make sense for a split style
+                    local state = manager.get_state(source)
+                    if state ~= nil then
+                        node = state.tree:get_node()
+                    end
+                end
+            end
+
+            -- Don't update in visual mode. Visual mode implies editing not browsing,
+            -- and updating the preview can cause flicker and stutter.
+
+
+            --if entry ~= nil and not util.is_visual_mode() then
+            if node ~= nil then
+                local preview_pane_id = openWeztermPreviewPane()
+                activeWeztermPane(neovim_wezterm_pane_id)
+
+                --for "oil plugin"
+                --if perviw_entry_id == entry.id then
+                --    return
+                --end
+                -- 本来は上記のように正しく新しい pane ができシェルが起動しているかチェック
+                -- 暫定でちょっと 待つ
+
+
+                -- bat 実行後 表示状態で待つ場合には必要だが デフォルトでは ノーマルcat と同じようにコマンド待機にもどるので不要
+                --if prev_cmd == "bat" then
+                --    sendCommandToWeztermPane(preview_pane_id, "q")
+                --    prev_cmd = nil
+                --end
+
+                --画面クリア（前回表示内容をクリア)
+                sendCommandToWeztermPane(preview_pane_id, "Clear-Host" )
+
+                --ファイルタイプで実行コマンド切替
+                local path = assert(geEntryAbsolutePath())
+                local command = ""
+                if node.type == "directory" then
+                    local cmd = "ls -l"
+                    command = command .. ("%s %s"):format(cmd, path)
+                    prev_cmd = cmd
+                elseif node.type == "file" and isImage(path) then
+                    local cmd = "wezterm imgcat"
+                    command = command .. ("%s %s"):format(cmd, path)
+                    prev_cmd = cmd
+                elseif node.type == "file" then
+                    local cmd = "bat"
+                    command = command .. ("%s %s"):format(cmd, path)
+                    prev_cmd = cmd
+                end
+
+                sendCommandToWeztermPane(preview_pane_id, command)
+                --previw_entry_id = entry.id
+            end
+        end),
+        10
+    )
+
+    updateWeztermPreview()
+end
+
+
+
+
+
+
+
 ------------ Debug Code
 ------------   inner local function を外部呼出しできるように M に紐づけ
 M.is_wezterm_preview_open = is_wezterm_preview_open
